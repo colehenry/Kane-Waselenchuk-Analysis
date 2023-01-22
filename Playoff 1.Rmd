@@ -1,0 +1,142 @@
+---
+title: "Playoff 1"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+attach(data)
+attach(data2)
+
+data$`Point Differential` <- data2$`Point Differential`
+
+data$`WinServe?`[data$`WinServe?` == "2"] <- 1 # win = 2
+data$`WinServe?`[data$`WinServe?` == "1"] <- 0 # loss = 1
+
+data$`Serve Type`[data$`Serve Type` == "Backhand Drive"] <- 1 # Backhand Drive = 1
+data$`Serve Type`[data$`Serve Type` == "Backhand Lob"] <- 2 # Backhand Lob = 2
+data$`Serve Type`[data$`Serve Type` == "Forehand Lob"] <- 3 # forehand Lob = 3
+data$`Serve Type`[data$`Serve Type` == "Forehand Drive"] <- 4 # forehand drive = 4
+data$`Serve Type`[data$`Serve Type` == "Wrap Around"] <- 5 # wrap around = 5
+
+data$`Serve?`[data$`Serve?` == "Yes"] <- 1 # win = yes
+data$`Serve?`[data$`Serve?` == "No"] <- 0 # loss = no
+
+data$`Starting Serve Position`[data$`Starting Serve Position` == "Center"] <- 1 # Backhand Drive = 1
+data$`Starting Serve Position`[data$`Starting Serve Position` == "Opponent Backhand"] <- 2 # Backhand Drive = 1
+data$`Starting Serve Position`[data$`Starting Serve Position` == "Forehand"] <- 3 # Backhand Drive = 1
+data$`Starting Serve Position`[data$`Starting Serve Position` == "Backhand"] <- 4 # Backhand Drive = 1
+data$`Starting Serve Position`[data$`Starting Serve Position` == "Opponent Forehand"] <- 5 # Backhand Drive = 1
+
+
+head(data)
+cor.test(`WinServe?`,`Length of Rally`)
+
+data$`WinServe?`<- as.numeric(as.factor(data$`WinServe?`))
+
+data$`Serve Type` <- as.numeric(as.factor(data$`Serve Type`))
+
+data$`Serve?` <- as.numeric(as.factor(data$`Serve?`)) #serve = 2, non serve = 1
+
+data$`Starting Serve Position` <- as.numeric(as.factor(data$`Starting Serve Position`)) #serve = 2, non serve = 1
+
+
+
+
+mean(`WinServe?`)
+
+mean(data$`WinServe?`)
+
+mean(data$`Serve Type`)
+
+cor.test(data$`WinServe?`, data$`Length of Rally`)
+
+plot(data$`WinServe?`~data$`Serve Type`)
+
+data <- data[-c(1,2)]
+data <- data[-c(15,16)]
+
+t.test()
+
+mean(data$`WinServe?`)
+
+mean(data$Faults[data$`Serve Type` == 1])
+mean(data$Faults[data$`Serve Type` == 2])
+mean(data$Faults[data$`Serve Type` == 3])
+mean(data$Faults[data$`Serve Type` == 4])
+mean(data$Faults[data$`Serve Type` == 5])
+
+
+
+
+t.test(data$`WinServe?`,data$`Serve Type`, var.equal=T)
+
+t.test(data$`WinServe?`,data$OpponentBackhands, var.equal=T)
+
+
+cor(data)
+
+model1 <-glm(data$`WinServe?`~`Serve Type` + Faults + `Starting Serve Position` + `Walls on Winning Hit` + `Length of Rally` + `Direction Changes` + OpponentDirectionChange + Forehands + Backhands + OpponentForehands + OpponentBackhands,family = "binomial", data = data)
+
+model2 <-glm(data$`WinServe?`~`Direction Changes` + OpponentDirectionChange,family = "binomial", data = data)
+
+model3 <-glm(data$`WinServe?`~`Direction Changes`,family = "binomial", data = data)
+
+summary(model4)
+
+summary(model1)
+summary(model2)
+
+range(`Direction Changes`)
+
+xDirChange <- seq(0,4,1)
+
+yDirChange <- predict(model3, list(`Direction Changes` = xDirChange), type = "response")
+
+plot(data$`Direction Changes`,data$`WinServe?`, xlab = "DIRECTION CHANGES", ylab = "WIN SERVE?")
+
+lines(xDirChange,yDirChange, col = "blue", lwd = 2)
+
+
+
+model4 <-glm(data$`WinServe?`~OpponentDirectionChange,family = "binomial", data = data)
+
+range(OpponentDirectionChange)
+
+xOppDirChange <- seq(0,4,1)
+
+yOppDirChange <- predict(model4, list(OpponentDirectionChange = xOppDirChange), type = "response")
+
+plot(data$OpponentDirectionChange,data$`WinServe?`, xlab = "OPPONENT DIRECTION CHANGES", ylab = "WIN SERVE?")
+
+lines(xOppDirChange,yOppDirChange, col = "blue", lwd = 2)
+
+mean(data$`Length of Rally`)
+median(data$`Length of Rally`)
+mean(OpponentDirectionChange)
+
+sum(data$`Length of Rally` == 1) / 129
+
+
+model5 <-glm(data$`Point Differential`~`Serve Type` + Faults + `Starting Serve Position` + `Walls on Winning Hit` + `Direction Changes` + OpponentDirectionChange + Forehands + Backhands + OpponentForehands + OpponentBackhands,family = gaussian, data = data)
+
+summary(model5)
+
+model6 <-glm(data$Faults~`Serve Type`,family = gaussian, data = data)
+
+summary(model6)
+cor.test(data$Faults,data$`Serve Type`)
+
+cor(data)
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
